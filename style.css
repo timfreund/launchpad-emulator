@@ -1,0 +1,9 @@
+a.connected {
+    background-color: #242;
+    color: #fff;
+}
+
+a.disconnected {
+    background-color: #422;
+    color: #fff;
+}

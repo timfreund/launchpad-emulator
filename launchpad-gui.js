@@ -95,7 +95,7 @@ function drawLaunchpad(div){
         }
     }
 
-    navigator.requestMIDIAccess( { sysex: true } ).then( onMIDISuccess, onMIDIFailure );
+    navigator.requestMIDIAccess( { sysex: false } ).then( onMIDISuccess, onMIDIFailure );
 }
 
 
@@ -103,14 +103,47 @@ function onMIDISuccess( midiAccess ) {
     console.log( "MIDI ready!" );
     launchpad.midi = midiAccess;
     launchpad.outputs = [];
+
+    var outdiv = document.getElementById("outputs");
     for(var entry of launchpad.midi.outputs){
+        var port = entry[1];
+        var devlink  = document.createElement("a");
+        devlink.className = "connected";
+        devlink.id = entry[0];
+        devlink.onclick = (function(devid){
+            return function(event){
+                var devlink = document.getElementById(devid);
+                for(var entry of launchpad.midi.outputs){
+                    if(entry[0] == devid){
+                        var p = entry[1];
+                        if(p.connection == "open"){
+                            p.close();
+                            devlink.className="disconnected";
+                        } else if(p.connection == "closed"){
+                            p.open();
+                            devlink.className="connected";
+                        }
+                    }
+                }
+            }
+        })(entry[0]);
+        devlink.innerHTML = port.name + "<br/>";
+        outdiv.appendChild(devlink);
         var port = entry[1];
         port.open();
         launchpad.outputs.push(port);
     }
 
+    var indiv = document.getElementById("inputs");
     for(var entry of launchpad.midi.inputs){
         var port = entry[1];
+        var devlink = document.createElement("a");
+        devlink.id = entry[0];
+        devlink.onclick = function(event){
+            console.log("clicked");
+        };
+        devlink.innerHTML = port.name + "<br/>";
+        indiv.appendChild(devlink);
         port.onmidimessage = launchpad.receive;
     }
 }
