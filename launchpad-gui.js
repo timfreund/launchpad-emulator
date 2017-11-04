@@ -25,12 +25,16 @@ launchpad.receive = function(message){
     console.log( str );
 
     if(message.data.length == 3){
-        if(message.data[0] == 0x90){
-            var button = document.getElementById("button" + message.data[1]);
-            if(message.data[2] == 0){
+        var button  = document.getElementById("button" + message.data[1]);
+        if(button){
+            if(message.data[0] == 0x90){
+                if(message.data[2] == 0){
+                    button.setAttribute("fill", "#aaa");
+                } else {
+                    button.setAttribute("fill", "#f00");
+                }
+            } else if(message.data[0] == 0x80){
                 button.setAttribute("fill", "#aaa");
-            } else {
-                button.setAttribute("fill", "#f00");
             }
         }
     }
